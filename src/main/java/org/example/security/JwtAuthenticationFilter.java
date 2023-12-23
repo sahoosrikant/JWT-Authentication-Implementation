@@ -28,25 +28,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-//        String username = null;
-//        String token = null;
+        try{
 
         // get JWT token from http request
         String token = getTokenFromRequest(request);
 
-        // validate token
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//        && jwtUtil.validateToken(token)
-        if (StringUtils.hasText(token) ) {
+        if (token != null && jwtUtil.validateJwtToken(token)) {
             System.out.println("Checking the token");
-            String username = jwtUtil.extractUsername(token);
+            String username = jwtUtil.getUsernameFromJWT(token);
             System.out.println("token is :"+ token+ "username is :"+username);
 
             // load the user associated with token
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            Boolean validateToken = jwtUtil.validateToken(token, userDetails);
 
-            if (validateToken) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -56,10 +50,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
-
         }
 
+        }catch(Exception e){
+            logger.error("Cannot set user authentication : {}", e);
+        }
         filterChain.doFilter(request, response);
     }
 
@@ -70,7 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7, bearerToken.length());
         }
-
         return null;
     }
 }

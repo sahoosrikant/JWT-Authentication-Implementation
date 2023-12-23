@@ -1,17 +1,14 @@
 package org.example.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
-//@Setter
-//@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,42 +16,25 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true,length = 20)
     private String username;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true,length = 120)
     private String email;
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
-    public Long getId() {
-        return id;
-    }
+    public User(){}
 
-    public String getName() {
-        return name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
+    public User(String username, String email, String password){
+        this.username = username;
+        this.email = email;
+        this.password = password;
     }
 }

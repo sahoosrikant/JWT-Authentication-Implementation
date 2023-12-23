@@ -1,7 +1,6 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
-
 import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        System.out.println("Before loadusebyname");
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not exists by Username or Email"));
 
         Set<GrantedAuthority> authorities = user.getRoles().stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
-        System.out.println("Checking the use :" + authorities);
 
         return new org.springframework.security.core.userdetails.User(
                 username,

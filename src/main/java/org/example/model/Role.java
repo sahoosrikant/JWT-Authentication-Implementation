@@ -1,14 +1,12 @@
 package org.example.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-//@Getter
-//@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "role")
 public class Role {
 
@@ -16,14 +14,12 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(length = 20)
     private String name;
 
-    public long getId() {
-        return id;
-    }
+    public Role(){}
 
-    public String getName() {
-        return name;
+    public Role(String name) {
+        this.name = name;
     }
 }
